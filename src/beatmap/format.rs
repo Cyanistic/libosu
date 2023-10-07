@@ -360,6 +360,7 @@ impl fmt::Display for Beatmap {
                 SampleSet::Normal => "Normal",
                 SampleSet::Soft => "Soft",
                 SampleSet::Drum => "Drum",
+                SampleSet::Other => "Other",
             }
         )?;
         writeln!(f, "StackLeniency: {}", self.stack_leniency)?;

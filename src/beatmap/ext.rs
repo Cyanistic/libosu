@@ -1,5 +1,5 @@
 use crate::beatmap::Beatmap;
-use crate::hitobject::{HitObject, HitObjectKind, SpinnerInfo};
+use crate::hitobject::{HitObject, HitObjectKind, LongInfo};
 use crate::timing::{
     InheritedTimingInfo, Millis, TimingPoint, TimingPointKind, UninheritedTimingInfo,
 };
@@ -17,8 +17,8 @@ impl Beatmap {
         let mut sv = 0.0;
         for (i, (obj, tp)) in self.double_iter().enumerate() {
             let sl = match &obj.kind {
-                // trivial case of circle or spinner
-                HitObjectKind::Circle | HitObjectKind::Spinner(_) => {
+                // trivial case of circle/spinner/hold
+                HitObjectKind::Circle | HitObjectKind::Spinner(_) | HitObjectKind::Hold(_) => {
                     res += 1;
                     continue;
                 }
@@ -58,7 +58,8 @@ impl Beatmap {
                 let duration = self.get_slider_duration(ho)?;
                 Some(ho.start_time.as_seconds() + duration)
             }
-            HitObjectKind::Spinner(SpinnerInfo { end_time }) => Some(end_time.as_seconds()),
+            HitObjectKind::Spinner(LongInfo { end_time }) => Some(end_time.as_seconds()),
+            HitObjectKind::Hold(LongInfo { end_time }) => Some(end_time.as_seconds()),
         }
     }
 

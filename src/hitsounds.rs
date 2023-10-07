@@ -25,6 +25,9 @@ pub enum SampleSet {
 
     /// Drum sample set.
     Drum = 3,
+
+    /// Any other sample set.
+    Other = 4
 }
 
 bitflags! {
@@ -98,9 +101,9 @@ impl FromStr for SampleInfo {
 
         Ok(SampleInfo {
             addition_set: SampleSet::from_u32(addition_set)
-                .ok_or(ParseError::InvalidSampleSet(addition_set))?,
+                .unwrap_or(SampleSet::Other),
             sample_set: SampleSet::from_u32(sample_set)
-                .ok_or(ParseError::InvalidSampleSet(sample_set))?,
+                .unwrap_or(SampleSet::Other),
 
             custom_index,
             sample_volume,

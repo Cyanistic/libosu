@@ -66,11 +66,11 @@ pub struct SliderInfo {
     pub edge_samplesets: Vec<(SampleSet, SampleSet)>,
 }
 
-/// Extra information provided by a spinner.
+/// Extra information provided by a spinners and holds.
 #[derive(Clone, Debug)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
-pub struct SpinnerInfo {
-    /// The time at which the slider ends.
+pub struct LongInfo {
+    /// The time at which the spinner/hold ends.
     pub end_time: Millis,
 }
 
@@ -81,17 +81,25 @@ pub enum HitObjectKind {
     /// Regular hit circle.
     Circle,
 
+    ///Mania hold note.
+    Hold(LongInfo),
+
     /// Slider.
     Slider(SliderInfo),
 
     /// Spinner.
-    Spinner(SpinnerInfo),
+    Spinner(LongInfo),
 }
 
 impl HitObjectKind {
     /// Is the given HitObject a hit circle?
     pub fn is_circle(&self) -> bool {
         matches!(self, HitObjectKind::Circle)
+    }
+    
+    /// Is the given HitObject a hold?
+    pub fn is_hold(&self) -> bool {
+        matches!(self, HitObjectKind::Hold(_))
     }
 
     /// Is the given HitObject a slider?
@@ -286,12 +294,25 @@ impl FromStr for HitObject {
                 } else {
                     SampleInfo::default()
                 };
-                HitObjectKind::Spinner(SpinnerInfo {
+                HitObjectKind::Spinner(LongInfo {
                     end_time: Millis(end_time),
                 })
-            }
+            },
+            
             o => {
-                return Err(ParseError::InvalidObjectType(o));
+                let end_time;
+                if let Some(ind) = parts[5].find(':') {
+                    end_time = parts[5][..ind].parse::<i32>()?;
+                    sample_info = SampleInfo::from_str(&parts[5][ind+1..])?;
+                }else if parts.get(6).is_some(){
+                    end_time = parts[5].parse::<i32>()?;
+                    sample_info = SampleInfo::from_str(&parts[6])?;
+                }else{
+                    return Err(ParseError::InvalidObjectType(o));
+                }
+                HitObjectKind::Hold(LongInfo {
+                    end_time: Millis(end_time),
+                })
             }
         };
 
@@ -318,6 +339,7 @@ impl fmt::Display for HitObject {
             HitObjectKind::Circle => 1,
             HitObjectKind::Slider { .. } => 2,
             HitObjectKind::Spinner { .. } => 8,
+            HitObjectKind::Hold { .. } => 128,
         } | if self.new_combo { 4 } else { 0 }
             | self.skip_color;
         write!(f, ",{}", obj_type)?;
@@ -359,10 +381,18 @@ impl fmt::Display for HitObject {
             HitObjectKind::Spinner(info) => {
                 write!(f, ",{}", info.end_time.0)?;
             }
+            
+            HitObjectKind::Hold(info) => {
+                write!(f, ",{}", info.end_time.0)?;
+            }
         }
 
         // hitsample
-        write!(f, ",{}", self.sample_info)?;
+        if let HitObjectKind::Hold(_) = &self.kind{
+            write!(f, ":{}", self.sample_info)?;
+        }else{
+            write!(f, ",{}", self.sample_info)?;
+        }
 
         Ok(())
     }
