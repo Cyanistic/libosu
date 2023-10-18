@@ -283,25 +283,25 @@ impl Beatmap {
                             "HPDrainRate" => {
                                 kvalue!(
                                     line_no,
-                                    captures[beatmap.difficulty.hp_drain_rate]: parse(f32)
+                                    captures[beatmap.difficulty.hp_drain_rate]: parse(f64)
                                 )
                             }
                             "CircleSize" => {
                                 kvalue!(
                                     line_no,
-                                    captures[beatmap.difficulty.circle_size]: parse(f32)
+                                    captures[beatmap.difficulty.circle_size]: parse(f64)
                                 )
                             }
                             "OverallDifficulty" => {
                                 kvalue!(
                                     line_no,
-                                    captures[beatmap.difficulty.overall_difficulty]: parse(f32)
+                                    captures[beatmap.difficulty.overall_difficulty]: parse(f64)
                                 )
                             }
                             "ApproachRate" => {
                                 kvalue!(
                                     line_no,
-                                    captures[beatmap.difficulty.approach_rate]: parse(f32)
+                                    captures[beatmap.difficulty.approach_rate]: parse(f64)
                                 )
                             }
                             "SliderMultiplier" => {

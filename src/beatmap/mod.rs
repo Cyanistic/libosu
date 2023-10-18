@@ -22,20 +22,20 @@ pub struct Difficulty {
     /// HP Drain Rate
     ///
     /// The wiki doesn't have a solid definition of this field yet.
-    pub hp_drain_rate: f32,
+    pub hp_drain_rate: f64,
 
     /// Circle Size
     ///
     /// This is a value between 0 and 10 representing how big circles should appear on screen.
     ///
     /// In osu!mania, this actually defines the number of columns (keys).
-    pub circle_size: f32,
+    pub circle_size: f64,
 
     /// Overall Difficulty
-    pub overall_difficulty: f32,
+    pub overall_difficulty: f64,
 
     /// Approach Rate
-    pub approach_rate: f32,
+    pub approach_rate: f64,
 
     /// Slider Multiplier
     pub slider_multiplier: f64,
@@ -51,7 +51,7 @@ impl Difficulty {
     /// The formula for this can be found [here][1] and is equal to `54.4 - 4.48 * cs`.
     ///
     /// [1]: https://osu.ppy.sh/wiki/en/Beatmapping/Circle_size
-    pub fn circle_size_osupx(&self) -> f32 {
+    pub fn circle_size_osupx(&self) -> f64 {
         54.4 - 4.48 * self.circle_size
     }
 
